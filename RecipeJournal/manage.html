@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Recipes – Recipe Journal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ── Manage page specific styles ── */
+    .manage-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      padding: 48px 0 72px;
+    }
+    @media (max-width: 900px) { .manage-layout { grid-template-columns: 1fr; } }
+
+    /* Form panel */
+    .form-panel {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      padding: 32px 28px;
+      box-shadow: var(--shadow-md);
+      height: fit-content;
+      position: sticky;
+      top: calc(var(--navbar-h) + 16px);
+    }
+    .form-panel h2 {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      color: var(--gray-900);
+      margin-bottom: 22px;
+      padding-bottom: 14px;
+      border-bottom: 2px solid var(--pink-100);
+    }
+    .form-panel .form-group { margin-bottom: 16px; }
+    .form-panel label {
+      display: block;
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 5px;
+    }
+    .form-panel input,
+    .form-panel select,
+    .form-panel textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      font-family: var(--font-body);
+      font-size: .9rem;
+      color: var(--gray-800);
+      background: var(--gray-50);
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      resize: vertical;
+    }
+    .form-panel input:focus,
+    .form-panel select:focus,
+    .form-panel textarea:focus {
+      border-color: var(--pink-400);
+      background: var(--white);
+      box-shadow: 0 0 0 4px rgba(249,93,135,.1);
+    }
+    .form-panel input.error,
+    .form-panel textarea.error { border-color: #f87171; }
+    .form-panel .field-error { font-size:.78rem; color:#ef4444; margin-top:4px; display:none; }
+    .form-panel .field-error.show { display:block; }
+    .form-hint { font-size:.78rem; color:var(--gray-400); margin-top:4px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .btn-save {
+      flex: 1;
+      padding: 12px;
+      border-radius: var(--radius-md);
+      background: var(--pink-400);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: .95rem;
+      transition: background var(--transition), transform var(--transition);
+    }
+    .btn-save:hover { background: var(--pink-500); transform: translateY(-1px); }
+    .btn-cancel-edit {
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      background: var(--gray-100);
+      color: var(--gray-600);
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: .9rem;
+      display: none;
+      transition: background var(--transition);
+    }
+    .btn-cancel-edit:hover { background: var(--gray-200); }
+    .btn-cancel-edit.visible { display: block; }
+
+    /* Recipe list panel */
+    .list-panel h2 {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      color: var(--gray-900);
+      margin-bottom: 22px;
+      padding-bottom: 14px;
+      border-bottom: 2px solid var(--pink-100);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .list-panel h2 span {
+      font-family: var(--font-body);
+      font-size: .85rem;
+      font-weight: 500;
+      color: var(--gray-400);
+    }
+
+    .manage-search {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .manage-search svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-400);
+      pointer-events: none;
+    }
+    .manage-search input {
+      width: 100%;
+      padding: 10px 14px 10px 42px;
+      border: 2px solid var(--pink-200);
+      border-radius: var(--radius-full);
+      font-family: var(--font-body);
+      font-size: .9rem;
+      background: var(--pink-50);
+      outline: none;
+      transition: border-color var(--transition);
+    }
+    .manage-search input:focus { border-color: var(--pink-400); }
+
+    .recipe-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .recipe-list-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 12px 16px;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow var(--transition);
+    }
+    .recipe-list-item:hover { box-shadow: var(--shadow-md); }
+    .recipe-list-item.editing {
+      border: 2px solid var(--pink-400);
+      box-shadow: 0 0 0 4px rgba(249,93,135,.12);
+    }
+    .list-item-img {
+      width: 60px;
+      height: 60px;
+      border-radius: var(--radius-md);
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .list-item-info { flex: 1; min-width: 0; }
+    .list-item-info h4 {
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .list-item-info p {
+      font-size: .78rem;
+      color: var(--gray-400);
+      margin-top: 2px;
+    }
+    .list-item-badge {
+      font-size: .72rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      flex-shrink: 0;
+    }
+    .badge-cooking { background: #fef3c7; color: #b45309; }
+    .badge-baking  { background: #fce7f3; color: #9d174d; }
+    .badge-custom  { background: #e0e7ff; color: #3730a3; }
+
+    .list-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .btn-edit-item,
+    .btn-delete-item {
+      width: 34px;
+      height: 34px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .85rem;
+      transition: background var(--transition), transform var(--transition);
+    }
+    .btn-edit-item { background: var(--pink-50); color: var(--pink-600); }
+    .btn-edit-item:hover { background: var(--pink-200); transform: scale(1.1); }
+    .btn-delete-item { background: #fee2e2; color: #b91c1c; }
+    .btn-delete-item:hover { background: #fca5a5; transform: scale(1.1); }
+
+    .empty-list {
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--gray-400);
+      font-size: .95rem;
+    }
+
+    /* Image upload */
+    .img-upload-wrap {
+      border: 2px dashed var(--pink-300);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color var(--transition), background var(--transition);
+      background: var(--pink-50);
+    }
+    .img-upload-wrap:hover { border-color: var(--pink-500); background: var(--pink-100); }
+    .img-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 20px 12px;
+      color: var(--gray-400);
+      font-size: .82rem;
+      text-align: center;
+      min-height: 100px;
+    }
+    .img-preview img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      display: block;
+    }
+    .img-preview.has-image { padding: 0; }
+    .img-preview.has-image svg,
+    .img-preview.has-image span { display: none; }
+    .btn-remove-img {
+      margin-top: 6px;
+      font-size: .78rem;
+      color: #ef4444;
+      font-family: var(--font-body);
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px 0;
+      text-decoration: underline;
+    }
+
+    /* Confirm delete modal */
+    .confirm-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 1100;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .confirm-overlay.open { display: flex; }
+    .confirm-box {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      padding: 36px 32px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+      box-shadow: var(--shadow-xl);
+      animation: modalIn .25s ease;
+    }
+    .confirm-box h3 { font-size: 1.1rem; color: var(--gray-900); margin-bottom: 10px; }
+    .confirm-box p  { font-size: .9rem; color: var(--gray-500); margin-bottom: 24px; }
+    .confirm-actions { display: flex; gap: 12px; justify-content: center; }
+    .btn-confirm-delete {
+      padding: 10px 24px;
+      border-radius: var(--radius-full);
+      background: #ef4444;
+      color: var(--white);
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: .9rem;
+      transition: background var(--transition);
+    }
+    .btn-confirm-delete:hover { background: #dc2626; }
+    .btn-confirm-cancel {
+      padding: 10px 24px;
+      border-radius: var(--radius-full);
+      background: var(--gray-100);
+      color: var(--gray-600);
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: .9rem;
+      transition: background var(--transition);
+    }
+    .btn-confirm-cancel:hover { background: var(--gray-200); }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="container nav-inner">
+      <a href="cooking.html" class="nav-logo">Recipe Journal</a>
+      <ul class="nav-links" id="nav-links" role="list">
+        <li><a href="cooking.html">Cooking</a></li>
+        <li><a href="baking.html">Baking</a></li>
+        <li><a href="favorites.html">Favorites</a></li>
+        <li><a href="manage.html">Manage Recipes</a></li>
+      </ul>
+      <div id="nav-user-area">
+        <a href="auth.html" class="btn btn-primary" style="padding:9px 22px;font-size:.88rem;">Login</a>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobile-menu" role="menu">
+    <a href="cooking.html" role="menuitem">Cooking</a>
+    <a href="baking.html" role="menuitem">Baking</a>
+    <a href="favorites.html" role="menuitem">Favorites</a>
+    <a href="manage.html" role="menuitem">Manage Recipes</a>
+    <div id="mobile-user-area"></div>
+  </div>
+
+  <!-- PAGE HERO -->
+  <header class="page-hero">
+    <div class="container">
+      <h1 class="display-font">Manage Recipes</h1>
+      <p>Add your own recipes, edit existing ones, or remove ones you no longer need.</p>
+    </div>
+  </header>
+
+  <!-- MAIN LAYOUT -->
+  <div class="container manage-layout">
+
+    <!-- LEFT: Add / Edit Form -->
+    <div class="form-panel" id="form-panel">
+      <h2 id="form-title">Add New Recipe</h2>
+
+      <div class="form-group">
+        <label for="r-name">Recipe name *</label>
+        <input type="text" id="r-name" placeholder="e.g. Creamy Mushroom Pasta" />
+        <span class="field-error" id="r-name-error"></span>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="r-category">Category *</label>
+          <select id="r-category">
+            <option value="">Select...</option>
+            <option value="cooking">Cooking</option>
+            <option value="baking">Baking</option>
+          </select>
+          <span class="field-error" id="r-category-error"></span>
+        </div>
+        <div class="form-group">
+          <label for="r-tags">Tags</label>
+          <input type="text" id="r-tags" placeholder="chicken, pasta (comma separated)" />
+          <span class="form-hint">Used for filter buttons</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="r-prep">Prep time *</label>
+          <input type="text" id="r-prep" placeholder="e.g. 15 min" />
+          <span class="field-error" id="r-prep-error"></span>
+        </div>
+        <div class="form-group">
+          <label for="r-cook">Cook time *</label>
+          <input type="text" id="r-cook" placeholder="e.g. 30 min" />
+          <span class="field-error" id="r-cook-error"></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="r-servings">Servings *</label>
+          <input type="number" id="r-servings" placeholder="4" min="1" max="100" />
+          <span class="field-error" id="r-servings-error"></span>
+        </div>
+        <div class="form-group">
+          <label>Recipe Image</label>
+          <div class="img-upload-wrap" id="img-upload-wrap">
+            <input type="file" id="r-image-file" accept="image/*" style="display:none" />
+            <div class="img-preview" id="img-preview">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <span>Click to upload image</span>
+            </div>
+          </div>
+          <button type="button" id="btn-remove-img" class="btn-remove-img" style="display:none;">Remove image</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="r-ingredients">Ingredients *</label>
+        <textarea id="r-ingredients" rows="5" placeholder="One ingredient per line:&#10;2 cups flour&#10;1 tsp salt&#10;3 eggs"></textarea>
+        <span class="field-error" id="r-ingredients-error"></span>
+      </div>
+
+      <div class="form-group">
+        <label for="r-steps">Instructions *</label>
+        <textarea id="r-steps" rows="6" placeholder="One step per line:&#10;Preheat oven to 180°C.&#10;Mix dry ingredients.&#10;Bake for 30 minutes."></textarea>
+        <span class="field-error" id="r-steps-error"></span>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-save" id="btn-save" type="button">Save Recipe</button>
+        <button class="btn-cancel-edit" id="btn-cancel-edit" type="button">Cancel</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: Recipe List -->
+    <div class="list-panel">
+      <h2>
+        All Recipes
+        <span id="recipe-count">0 recipes</span>
+      </h2>
+
+      <div class="manage-search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="search" id="manage-search" placeholder="Search recipes..." autocomplete="off" />
+      </div>
+
+      <div class="recipe-list" id="manage-list"></div>
+    </div>
+
+  </div>
+
+  <!-- Confirm Delete Modal -->
+  <div class="confirm-overlay" id="confirm-overlay">
+    <div class="confirm-box">
+      <h3>Delete Recipe?</h3>
+      <p id="confirm-msg">This will permanently remove this recipe.</p>
+      <div class="confirm-actions">
+        <button class="btn-confirm-cancel" onclick="closeConfirm()">Cancel</button>
+        <button class="btn-confirm-delete" id="btn-confirm-delete">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" role="status" aria-live="polite"></div>
+
+  <script src="data/seed.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/manage.js"></script>
+</body>
+</html>

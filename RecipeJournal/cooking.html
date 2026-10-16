@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cooking Recipes – Recipe Journal</title>
+  <meta name="description" content="Browse delicious savoury main dish recipes on Recipe Journal." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="container nav-inner">
+      <a href="index.html" class="nav-logo">Recipe Journal</a>
+      <ul class="nav-links" id="nav-links" role="list">
+        <li><a href="cooking.html">Cooking</a></li>
+        <li><a href="baking.html">Baking</a></li>
+        <li><a href="favorites.html">Favorites</a></li>
+        <li><a href="manage.html">Manage Recipes</a></li>
+      </ul>
+      <div id="nav-user-area">
+        <a href="auth.html" class="btn btn-primary" style="padding:9px 22px;font-size:.88rem;">Login</a>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobile-menu" role="menu">
+    <a href="cooking.html" role="menuitem">Cooking</a>
+    <a href="baking.html" role="menuitem">Baking</a>
+    <a href="favorites.html" role="menuitem">Favorites</a>
+    <a href="manage.html" role="menuitem">Manage Recipes</a>
+    <div id="mobile-user-area">
+      <a href="auth.html" style="font-weight:600;color:var(--pink-600);">Login / Register</a>
+    </div>
+  </div>
+
+  <!-- PAGE HERO -->
+  <header class="page-hero">
+    <div class="container">
+      <h1 class="display-font">Cooking Recipes</h1>
+      <p>Satisfying mains and savory dishes for every appetite and skill level.</p>
+    </div>
+  </header>
+
+  <!-- SEARCH & FILTER -->
+  <div class="search-section" role="search">
+    <div class="container search-wrap">
+      <div class="search-input-wrap">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input
+          type="search"
+          id="search-input"
+          class="search-input"
+          placeholder="Search recipes..."
+          aria-label="Search cooking recipes"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="filter-btns" role="group" aria-label="Filter by category">
+        <button class="filter-btn active" data-tag="all">All</button>
+        <button class="filter-btn" data-tag="chicken">Chicken</button>
+        <button class="filter-btn" data-tag="beef">Beef</button>
+        <button class="filter-btn" data-tag="pasta">Pasta</button>
+        <button class="filter-btn" data-tag="seafood">Seafood</button>
+        <button class="filter-btn" data-tag="vegetarian">Vegetarian</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECIPE GRID -->
+  <main class="recipes-section">
+    <div class="container">
+      <div class="recipe-grid" id="recipe-grid" role="list" aria-label="Cooking recipes"></div>
+      <div id="no-results" class="no-results" role="status" aria-live="polite">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <p>No recipes found. Try a different search.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal">
+      <img id="modal-img" src="" alt="" class="modal-img" />
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title display-font" id="modal-title"></h2>
+          <button class="modal-close" onclick="closeModal()" aria-label="Close recipe modal">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+              <path d="M18 6 6 18M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-meta" role="list">
+          <div class="meta-badge" role="listitem">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            Prep: <strong id="modal-prep"></strong>
+          </div>
+          <div class="meta-badge" role="listitem">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M8 12h4l3 3"/>
+            </svg>
+            Cook: <strong id="modal-cook"></strong>
+          </div>
+          <div class="meta-badge" role="listitem">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            <strong id="modal-servings"></strong>
+          </div>
+        </div>
+
+        <h3 class="modal-section-title">Ingredients</h3>
+        <ul class="ingredients-list" id="modal-ingredients" aria-label="Ingredients list"></ul>
+
+        <h3 class="modal-section-title">Instructions</h3>
+        <ol class="steps-list" id="modal-steps" aria-label="Cooking steps"></ol>
+
+        <div class="modal-footer">
+          <button class="btn-favorite" id="btn-favorite" aria-label="Save recipe to favorites">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            Save to Favorites
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" role="status" aria-live="polite"></div>
+
+  <script src="data/seed.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/recipes.js"></script>
+</body>
+</html>

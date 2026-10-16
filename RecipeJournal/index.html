@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recipe Journal</title>
+  <meta name="description" content="Login or create a free account on Recipe Journal." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- NAVBAR – logo only -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="container nav-inner" style="justify-content:center;">
+      <a href="index.html" class="nav-logo">Recipe Journal</a>
+    </div>
+  </nav>
+
+  <!-- AUTH PAGE -->
+  <main class="auth-page" role="main">
+    <div class="auth-card" role="region" aria-label="Authentication">
+
+      <div class="auth-logo">
+        <h2 class="display-font">Recipe Journal</h2>
+        <p>Your personal recipe companion</p>
+      </div>
+
+      <!-- Tab switcher -->
+      <div class="auth-tabs" role="tablist" aria-label="Login or Register">
+        <button class="auth-tab active" data-tab="login" role="tab" aria-selected="true" aria-controls="login-form" id="tab-login">
+          Login
+        </button>
+        <button class="auth-tab" data-tab="register" role="tab" aria-selected="false" aria-controls="register-form" id="tab-register">
+          Register
+        </button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form id="login-form" class="auth-form active" role="tabpanel" aria-labelledby="tab-login" novalidate>
+        <div class="form-group">
+          <label for="login-email">Email address</label>
+          <input type="email" id="login-email" name="email" placeholder=""
+            autocomplete="email" required aria-describedby="login-email-error" />
+          <span class="field-error" id="login-email-error" role="alert"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" name="password" placeholder=""
+            autocomplete="current-password" required aria-describedby="login-password-error" />
+          <span class="field-error" id="login-password-error" role="alert"></span>
+        </div>
+
+        <button type="button" id="login-btn" class="form-submit">Login to My Kitchen</button>
+
+        <p class="text-center mt-4" style="font-size:.88rem;color:var(--gray-400);">
+          Don't have an account?
+          <button type="button" onclick="document.querySelector('[data-tab=register]').click()"
+            style="color:var(--pink-500);font-weight:600;background:none;border:none;cursor:pointer;font-family:inherit;font-size:.88rem;">
+            Register here
+          </button>
+        </p>
+      </form>
+
+      <!-- REGISTER FORM -->
+      <form id="register-form" class="auth-form" role="tabpanel" aria-labelledby="tab-register" novalidate>
+        <div class="form-group">
+          <label for="reg-name">Full name</label>
+          <input type="text" id="reg-name" name="name" placeholder="Juan Dela Cruz"
+            autocomplete="name" required aria-describedby="reg-name-error" />
+          <span class="field-error" id="reg-name-error" role="alert"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-email">Email address</label>
+          <input type="email" id="reg-email" name="email" placeholder="you@example.com"
+            autocomplete="email" required aria-describedby="reg-email-error" />
+          <span class="field-error" id="reg-email-error" role="alert"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" name="password" placeholder="Min. 6 characters"
+            autocomplete="new-password" required aria-describedby="reg-password-error" />
+          <span class="field-error" id="reg-password-error" role="alert"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-confirm">Confirm password</label>
+          <input type="password" id="reg-confirm" name="confirm" placeholder="Repeat your password"
+            autocomplete="new-password" required aria-describedby="reg-confirm-error" />
+          <span class="field-error" id="reg-confirm-error" role="alert"></span>
+        </div>
+
+        <button type="button" id="register-btn" class="form-submit">Create My Account</button>
+
+        <p class="text-center mt-4" style="font-size:.88rem;color:var(--gray-400);">
+          Already have an account?
+          <button type="button" onclick="document.querySelector('[data-tab=login]').click()"
+            style="color:var(--pink-500);font-weight:600;background:none;border:none;cursor:pointer;font-family:inherit;font-size:.88rem;">
+            Login here
+          </button>
+        </p>
+      </form>
+
+    </div>
+  </main>
+
+  <div id="toast-container" role="status" aria-live="polite"></div>
+
+  <script src="js/main.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
